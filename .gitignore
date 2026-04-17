@@ -1,0 +1,23 @@
+# Java / Maven
+HotelBookingWeb_BE/target/
+HotelBookingWeb_BE/*.log
+HotelBookingWeb_BE/.mvn/wrapper/maven-wrapper.jar
+
+# Frontend / React / Node
+lakeSide-hotel-demo-client/node_modules/
+lakeSide-hotel-demo-client/dist/
+lakeSide-hotel-demo-client/build/
+lakeSide-hotel-demo-client/*.log
+lakeSide-hotel-demo-client/.env
+lakeSide-hotel-demo-client/.env.local
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Temporary files
+temp/
+tmp/
