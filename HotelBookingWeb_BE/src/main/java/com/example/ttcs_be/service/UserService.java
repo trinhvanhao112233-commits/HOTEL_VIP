@@ -12,6 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 @RequiredArgsConstructor
 public class UserService implements IUserService {
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
@@ -138,13 +142,20 @@ public class UserService implements IUserService {
         //Lấy quyền và gán ngay trước khi lưu
         Role userRole = roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> new RuntimeException("Lỗi: Không tìm thấy quyền ROLE_USER"));
-        userToSave.setRoles(Collections.singletonList(userRole));
+        
+        userToSave.getRoles().clear();
+        userToSave.getRoles().add(userRole);
 
-        // Lưu vào Database (Lúc này Role và User đang ở chung 1 phiên làm việc -> Sẽ hết lỗi)
-        userRepository.save(userToSave);
-
-        pendingUserMap.remove(email);
-        return "Xác thực thành công";
+        try {
+            // Lưu vào Database
+            userRepository.save(userToSave);
+            pendingUserMap.remove(email);
+            return "Xác thực thành công";
+        } catch (Exception e) {
+            logger.error("Lỗi nghiêm trọng khi lưu User sau khi xác thực OTP cho {}: {}", email, e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Lỗi hệ thống khi hoàn tất đăng ký: " + e.getMessage());
+        }
     }
 
     @Override
@@ -158,5 +169,10 @@ public class UserService implements IUserService {
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+    }
+
+    @Override
+    public long countTotalUsers() {
+        return userRepository.count();
     }
 }

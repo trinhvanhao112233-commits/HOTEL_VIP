@@ -6,6 +6,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import Home from "./components/home/Home"
 import EditRoom from "./components/room/EditRoom"
 import AddRoom from "./components/room/AddRoom"
+import ExistingRoomTypes from "./components/room/ExistingRoomTypes"
+import AdminDashboard from "./components/admin/AdminDashboard"
 import NavBar from "./components/layout/NavBar"
 import Footer from "./components/layout/Footer"
 import RoomListing from "./components/room/RoomListing"
@@ -46,6 +48,8 @@ function App() {
 						<Route path="/browse-all-rooms" element={<RoomListing />} />
 
 						<Route path="/admin" element={<Admin />} />
+						<Route path="/existing-room-types" element={<ExistingRoomTypes />} />
+						<Route path="/admin-dashboard" element={<AdminDashboard />} />
 						<Route path="/checkout" element={<Checkout />} />
 						<Route path="/booking-success" element={<BookingSuccess />} />
 						<Route path="/existing-bookings" element={<Bookings />} />

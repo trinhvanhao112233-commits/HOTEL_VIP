@@ -21,6 +21,8 @@ public class HotelUserDetails implements UserDetails {
     private Long id;
     private String email;
     private String password;
+    private String firstName;
+    private String lastName;
     private Collection<GrantedAuthority> authorities;
 
     public static HotelUserDetails buildUserDetails(User user) {
@@ -32,6 +34,8 @@ public class HotelUserDetails implements UserDetails {
                 user.getId(),
                 user.getEmail(),
                 user.getPassword(),
+                user.getFirstName(),
+                user.getLastName(),
                 authorities);
     }
 

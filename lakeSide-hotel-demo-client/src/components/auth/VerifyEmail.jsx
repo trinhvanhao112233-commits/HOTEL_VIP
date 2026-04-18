@@ -24,7 +24,8 @@ const VerifyEmail = () => {
 				navigate("/")
 			}, 2000)
 		} catch (error) {
-			setErrorMessage(error.message)
+			const errorMessage = error.response?.data?.message || error.message || "An error occurred during verification."
+			setErrorMessage(errorMessage)
 		}
 	}
 

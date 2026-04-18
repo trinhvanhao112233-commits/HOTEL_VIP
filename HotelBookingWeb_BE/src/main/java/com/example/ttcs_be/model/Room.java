@@ -25,12 +25,8 @@ public class Room {
     @Column(name = "room_number", nullable = false, unique = true, length = 50)
     private String roomNumber;
 
-    @Lob
-    @Column(name = "photo", columnDefinition = "LONGTEXT")
-    private String photo;
-
-    @Column(name = "price", nullable = false)
-    private BigDecimal price;
+    @Column(name = "price")
+    private BigDecimal roomPrice;
 
     // Một phòng có thể nằm trong nhiều chi tiết giỏ hàng đặt phòng
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)

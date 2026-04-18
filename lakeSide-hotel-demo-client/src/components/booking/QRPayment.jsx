@@ -93,7 +93,7 @@ const QRPayment = () => {
 								</div>
 								<div className="text-center">
 									<p className="small mb-1 text-muted">Scan to pay with any Banking App</p>
-									<h4 className="fw-bold text-primary mb-0">${totalAmount}</h4>
+									<h4 className="fw-bold text-primary mb-0">{totalAmount ? totalAmount.toLocaleString() : "0"} VNĐ</h4>
 								</div>
 							</Col>
 

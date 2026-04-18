@@ -27,11 +27,9 @@ public class RoomController {
     // 1. Thêm phòng vật lý mới
     @PostMapping("/add/new-room")
     public ResponseEntity<RoomResponse> addNewRoom(
-            @RequestParam(value = "photo", required = false) MultipartFile photo,
             @RequestParam("roomTypeId") Long roomTypeId,
-            @RequestParam("roomNumber") String roomNumber,
-            @RequestParam("price") BigDecimal price) {
-        Room savedRoom = roomService.addNewRoom(roomTypeId, roomNumber, price, photo);
+            @RequestParam("roomNumber") String roomNumber) {
+        Room savedRoom = roomService.addNewRoom(roomTypeId, roomNumber);
         return ResponseEntity.status(HttpStatus.CREATED).body(mapToRoomResponse(savedRoom));
     }
 
@@ -56,11 +54,9 @@ public class RoomController {
     @PutMapping("/update/{roomId}")
     public ResponseEntity<RoomResponse> updateRoom(
             @PathVariable Long roomId,
-            @RequestParam(value = "photo", required = false) MultipartFile photo,
             @RequestParam(value = "roomTypeId", required = false) Long roomTypeId,
-            @RequestParam(value = "roomNumber", required = false) String roomNumber,
-            @RequestParam(value = "price", required = false) BigDecimal price) {
-        Room updatedRoom = roomService.updateRoom(roomId, roomTypeId, roomNumber, price, photo);
+            @RequestParam(value = "roomNumber", required = false) String roomNumber) {
+        Room updatedRoom = roomService.updateRoom(roomId, roomTypeId, roomNumber);
         return ResponseEntity.ok(mapToRoomResponse(updatedRoom));
     }
 
@@ -76,7 +72,7 @@ public class RoomController {
     public ResponseEntity<List<RoomResponse>> getAvailableRooms(
             @RequestParam("checkInDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkInDate,
             @RequestParam("checkOutDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkOutDate,
-            @RequestParam(value = "roomTypeId", required = false) Long roomTypeId) { // required = false như đã thảo luận
+            @RequestParam(value = "roomTypeId", required = false) Long roomTypeId) {
 
         List<Room> availableRooms = roomService.getAvailableRooms(checkInDate, checkOutDate, roomTypeId);
         List<RoomResponse> roomResponses = availableRooms.stream()
@@ -91,7 +87,7 @@ public class RoomController {
 
     /**
      * Hàm Helper hỗ trợ ánh xạ (map) từ Entity sang DTO
-     * Lồng Object RoomTypeResponse vào trong RoomResponse thay vì để các trường riêng lẻ.
+     * Lấy ẢNH và GIÁ từ LoaiPhong thay vì bảng Room.
      */
     private RoomResponse mapToRoomResponse(Room room) {
         // Map cấu hình loại phòng
@@ -100,15 +96,16 @@ public class RoomController {
                 room.getRoomType().getName(),
                 room.getRoomType().getBasePrice(),
                 room.getRoomType().getMaxCapacity(),
-                room.getRoomType().getDescription()
+                room.getRoomType().getDescription(),
+                room.getRoomType().getPhoto()
         );
 
         // Map đối tượng phòng và gắn loại phòng vào
         return new RoomResponse(
                 room.getId(),
                 room.getRoomNumber(),
-                room.getPhoto(),
-                room.getPrice(),
+                room.getRoomType().getPhoto(), // Lấy từ loại phòng
+                room.getRoomType().getBasePrice(), // Lấy từ loại phòng
                 roomTypeResponse
         );
     }

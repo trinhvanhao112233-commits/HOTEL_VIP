@@ -20,4 +20,6 @@ public interface IBookingService {
     List<Booking> getBookingsByUserEmail(String email);
     BigDecimal getTotalRevenue();
     long getTotalBookings();
+    List<Object[]> getMonthlyStatistics();
+    List<Object[]> getRoomTypeStatistics();
 }

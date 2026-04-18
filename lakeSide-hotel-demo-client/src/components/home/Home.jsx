@@ -11,7 +11,9 @@ const Home = () => {
 	const location = useLocation()
 
 	const message = location.state && location.state.message
-	const currentUser = localStorage.getItem("userId")
+	const firstName = localStorage.getItem("firstName")
+	const lastName = localStorage.getItem("lastName")
+	const currentUser = firstName && lastName ? `${firstName} ${lastName}` : localStorage.getItem("userId")
 	
 	return (
 		<section>

@@ -106,6 +106,7 @@ const ExistingRooms = () => {
 								<thead>
 									<tr className="text-center">
 										<th>ID</th>
+										<th>Photo</th>
 										<th>Room Type</th>
 										<th>Room Price</th>
 										<th>Actions</th>
@@ -116,8 +117,21 @@ const ExistingRooms = () => {
 									{currentRooms.map((room) => (
 										<tr key={room.id} className="text-center">
 											<td className="fw-bold">{room.id}</td>
+											<td>
+												{room.photo ? (
+													<img
+														src={`data:image/png;base64,${room.photo}`}
+														alt="Room"
+														style={{ width: "60px", height: "40px", objectFit: "cover", borderRadius: "4px" }}
+													/>
+												) : (
+													<div className="bg-light text-muted small py-2 rounded" style={{ width: "60px" }}>No Photo</div>
+												)}
+											</td>
 											<td>{room.roomType ? room.roomType.name : "N/A"}</td>
-											<td className="hotel-color fw-semibold">${room.price}</td>
+											<td className="hotel-color fw-semibold">
+												{room.price ? room.price.toLocaleString() : "0"} VNĐ
+											</td>
 											<td>
 												<div className="d-flex justify-content-center gap-2">
 													<Link to={`/edit-room/${room.id}`} className="btn btn-outline-info btn-sm rounded-circle p-2 d-inline-flex">

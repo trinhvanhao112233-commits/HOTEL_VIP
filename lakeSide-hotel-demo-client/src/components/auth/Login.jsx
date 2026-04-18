@@ -24,7 +24,7 @@ const Login = () => {
 		const success = await loginUser(login)
 		if (success) {
 			const token = success.token
-			auth.handleLogin(token, success.id)
+			auth.handleLogin(token, success.id, success.email, success.firstName, success.lastName)
 			navigate(redirectUrl, { replace: true })
 		} else {
 			setErrorMessage("Invalid username or password. Please try again.")

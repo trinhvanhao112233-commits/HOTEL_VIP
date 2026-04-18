@@ -24,4 +24,20 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     // Đếm tổng số lượng đơn đặt phòng
     @Query("SELECT COUNT(b) FROM Booking b")
     long countTotalBookings();
+
+    // Lấy dữ liệu doanh thu theo tháng trong năm hiện tại (Dành cho biểu đồ)
+    @Query("SELECT MONTH(b.checkIn) as month, SUM(b.totalAmount) as revenue, COUNT(b) as count " +
+           "FROM Booking b " +
+           "WHERE YEAR(b.checkIn) = YEAR(CURRENT_DATE) " +
+           "GROUP BY MONTH(b.checkIn) " +
+           "ORDER BY MONTH(b.checkIn) ASC")
+    List<Object[]> getMonthlyStatistics();
+
+    // Lấy dữ liệu phân bổ theo loại phòng (Dành cho biểu đồ tròn)
+    @Query("SELECT rt.name as type, COUNT(br) as count " +
+           "FROM BookingRoom br " +
+           "JOIN br.room r " +
+           "JOIN r.roomType rt " +
+           "GROUP BY rt.name")
+    List<Object[]> getRoomTypeStatistics();
 }

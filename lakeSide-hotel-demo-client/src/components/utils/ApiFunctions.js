@@ -7,34 +7,13 @@ export const api = axios.create({
 export const getHeader = () => {
 	const token = localStorage.getItem("token")
 	return {
-		Authorization: `Bearer ${token}`,
-		"Content-Type": "application/json"
+		Authorization: `Bearer ${token}`
 	}
 }
 
-/* This function adds a new room room to the database */
-export async function addRoom(photo, roomTypeId, roomNumber, price) {
-	const formData = new FormData()
-	if (photo) formData.append("photo", photo)
-	formData.append("roomTypeId", roomTypeId)
-	formData.append("roomNumber", roomNumber)
-	formData.append("price", price)
-
-	const headers = getHeader()
-	delete headers["Content-Type"]
-	
-	const response = await api.post("/rooms/add/new-room", formData, {
-		headers: headers
-	})
-	if (response.status === 201) {
-		return true
-	} else {
-		return false
-	}
-}
 
 /* This function gets all room types from thee database */
-export async function getRoomTypes() {
+export async function getAllRoomTypes() {
 	try {
 		const response = await api.get("/room-types/all")
 		return response.data
@@ -46,12 +25,82 @@ export async function getRoomTypes() {
 /* This function adds a new room type to the database */
 export async function addRoomType(roomTypeData) {
 	try {
-		const response = await api.post("/room-types/add", roomTypeData, {
+		const formData = new FormData()
+		formData.append("name", roomTypeData.name)
+		formData.append("basePrice", roomTypeData.basePrice)
+		formData.append("maxCapacity", roomTypeData.maxCapacity)
+		formData.append("description", roomTypeData.description)
+		if (roomTypeData.photo) {
+			formData.append("photo", roomTypeData.photo)
+		}
+
+		const response = await api.post("/room-types/add", formData, {
 			headers: getHeader()
 		})
 		return response.data
 	} catch (error) {
-		throw new Error("Error adding room type")
+		const errorMessage = error.response?.data?.message || error.message || "Error adding room type"
+		throw new Error(errorMessage)
+	}
+}
+
+/* This function updates a room type */
+export async function updateRoomType(id, roomTypeData) {
+	try {
+		const formData = new FormData()
+		if (roomTypeData.name) formData.append("name", roomTypeData.name)
+		if (roomTypeData.basePrice) formData.append("basePrice", roomTypeData.basePrice)
+		if (roomTypeData.maxCapacity) formData.append("maxCapacity", roomTypeData.maxCapacity)
+		if (roomTypeData.description) formData.append("description", roomTypeData.description)
+		if (roomTypeData.photo) formData.append("photo", roomTypeData.photo)
+
+		const response = await api.put(`/room-types/update/${id}`, formData, {
+			headers: getHeader()
+		})
+		return response.data
+	} catch (error) {
+		const errorMessage = error.response?.data?.message || error.message || "Error updating room type"
+		throw new Error(errorMessage)
+	}
+}
+
+/* This function deletes a room type */
+export async function deleteRoomType(id) {
+	try {
+		const response = await api.delete(`/room-types/delete/${id}`, {
+			headers: getHeader()
+		})
+		return response.data
+	} catch (error) {
+		const errorMessage = error.response?.data?.message || error.message || "Error deleting room type"
+		throw new Error(errorMessage)
+	}
+}
+
+/* This function adds a new room to the database */
+export async function addRoom(roomNumber, roomTypeId) {
+	try {
+		const formData = new FormData()
+		formData.append("roomNumber", roomNumber)
+		formData.append("roomTypeId", roomTypeId)
+
+		const response = await api.post("/rooms/add/new-room", formData, {
+			headers: getHeader()
+		})
+		return response
+	} catch (error) {
+		const errorMessage = error.response?.data?.message || error.message || "Error adding room"
+		throw new Error(errorMessage)
+	}
+}
+
+/* This function gets all rooms from the database */
+export async function getAllRooms() {
+	try {
+		const response = await api.get("/rooms/all-rooms")
+		return response.data
+	} catch (error) {
+		throw new Error("Error fetching rooms")
 	}
 }
 
@@ -62,27 +111,6 @@ export async function getRoomTypeById(id) {
 		return response.data
 	} catch (error) {
 		throw new Error("Error fetching room type")
-	}
-}
-
-/* This function updates a room type in the database */
-export async function updateRoomType(id, roomTypeData) {
-	try {
-		const response = await api.put(`/room-types/update/${id}`, roomTypeData, {
-			headers: getHeader()
-		})
-		return response.data
-	} catch (error) {
-		throw new Error("Error updating room type")
-	}
-}
-/* This function gets all rooms from the database */
-export async function getAllRooms() {
-	try {
-		const result = await api.get("/rooms/all-rooms")
-		return result.data
-	} catch (error) {
-		throw new Error("Error fetching rooms")
 	}
 }
 
@@ -97,21 +125,21 @@ export async function deleteRoom(roomId) {
 		throw new Error(`Error deleting room ${error.message}`)
 	}
 }
-/* This function update a room */
+/* This function updates a room */
 export async function updateRoom(roomId, roomData) {
-	const formData = new FormData()
-	formData.append("roomNumber", roomData.roomNumber)
-	formData.append("roomTypeId", roomData.roomTypeId)
-	formData.append("price", roomData.price)
-	if (roomData.photo) formData.append("photo", roomData.photo)
+	try {
+		const formData = new FormData()
+		if (roomData.roomNumber) formData.append("roomNumber", roomData.roomNumber)
+		if (roomData.roomTypeId) formData.append("roomTypeId", roomData.roomTypeId)
 
-	const headers = getHeader()
-	delete headers["Content-Type"]
-	
-	const response = await api.put(`/rooms/update/${roomId}`, formData, {
-		headers: headers
-	})
-	return response
+		const response = await api.put(`/rooms/update/${roomId}`, formData, {
+			headers: getHeader()
+		})
+		return response
+	} catch (error) {
+		const errorMessage = error.response?.data?.message || error.message || "Error updating room"
+		throw new Error(errorMessage)
+	}
 }
 
 /* This funcction gets a room by the id */
@@ -141,11 +169,13 @@ export async function bookRoom(bookingRequest) {
 	}
 }
 
-/* This function gets alll bokings from the database */
 export async function getAllBookings() {
 	try {
 		const result = await api.get("/bookings/all-bookings", {
-			headers: getHeader()
+			headers: {
+				...getHeader(),
+				"Content-Type": "application/json"
+			}
 		})
 		return result.data
 	} catch (error) {
@@ -196,7 +226,18 @@ export async function registerUser(registration) {
 		return response.data
 	} catch (error) {
 		if (error.response && error.response.data) {
-			throw new Error(error.response.data)
+			const errorData = error.response.data
+			let errorMessage = ""
+			if (typeof errorData === "string") {
+				errorMessage = errorData
+			} else if (errorData.message) {
+				errorMessage = errorData.message
+			} else if (errorData.error) {
+				errorMessage = `Server Error: ${errorData.error}`
+			} else {
+				errorMessage = JSON.stringify(errorData)
+			}
+			throw new Error(errorMessage)
 		} else {
 			throw new Error(`User registration error : ${error.message}`)
 		}
@@ -292,9 +333,32 @@ export async function verifyEmail(email, code) {
 		return response.data
 	} catch (error) {
 		if (error.response && error.response.data) {
-			throw new Error(error.response.data)
+			const errorData = error.response.data
+			let errorMessage = ""
+			if (typeof errorData === "string") {
+				errorMessage = errorData
+			} else if (errorData.message) {
+				errorMessage = errorData.message
+			} else if (errorData.error) {
+				errorMessage = `Server Error: ${errorData.error}`
+			} else {
+				errorMessage = JSON.stringify(errorData)
+			}
+			throw new Error(errorMessage)
 		} else {
 			throw new Error(`Email verification error : ${error.message}`)
 		}
+	}
+}
+
+/* This function gets the dashboard statistics for admin */
+export async function getStatistics() {
+	try {
+		const response = await api.get("/statistics/dashboard-summary", {
+			headers: getHeader()
+		})
+		return response.data
+	} catch (error) {
+		throw new Error(`Error fetching statistics : ${error.message}`)
 	}
 }

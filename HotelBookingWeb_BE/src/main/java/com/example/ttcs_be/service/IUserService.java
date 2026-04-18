@@ -13,4 +13,5 @@ public interface IUserService {
     void processRegistration(User user);
     String validateOtpAndSaveUser(String email, String otp);
     void changePassword(Long userId, String oldPassword, String newPassword);
+    long countTotalUsers();
 }

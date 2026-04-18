@@ -13,6 +13,8 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
     Optional<Room> findByRoomNumber(String roomNumber);
 
+    boolean existsByRoomTypeId(Long roomTypeId);
+
     @Query("SELECT r FROM Room r " +
             // Thêm điều kiện IS NULL để biến roomTypeId thành tùy chọn
             "WHERE (:roomTypeId IS NULL OR r.roomType.id = :roomTypeId) " +

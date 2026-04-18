@@ -8,21 +8,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.multipart.MultipartFile;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/room-types")
-
 public class RoomTypeController {
 
     private final IRoomTypeService roomTypeService;
 
-    // 1. Thêm loại phòng mới
+    // 1. Thêm loại phòng mới (Hỗ trợ tải ảnh)
     @PostMapping("/add")
-    public ResponseEntity<RoomTypeResponse> addRoomType(@RequestBody RoomType roomTypeRequest) {
-        RoomType savedRoomType = roomTypeService.addRoomType(roomTypeRequest);
+    public ResponseEntity<RoomTypeResponse> addRoomType(
+            @RequestParam("name") String name,
+            @RequestParam("basePrice") BigDecimal basePrice,
+            @RequestParam("maxCapacity") int maxCapacity,
+            @RequestParam("description") String description,
+            @RequestParam(value = "photo", required = false) MultipartFile photo) {
+        RoomType savedRoomType = roomTypeService.addRoomType(name, basePrice, maxCapacity, description, photo);
         return ResponseEntity.status(HttpStatus.CREATED).body(mapToResponse(savedRoomType));
     }
 
@@ -43,12 +49,16 @@ public class RoomTypeController {
         return ResponseEntity.ok(mapToResponse(roomType));
     }
 
-    // 4. Cập nhật thông tin loại phòng
+    // 4. Cập nhật thông tin loại phòng (Hỗ trợ tải ảnh mới)
     @PutMapping("/update/{id}")
     public ResponseEntity<RoomTypeResponse> updateRoomType(
             @PathVariable Long id,
-            @RequestBody RoomType roomTypeRequest) {
-        RoomType updatedRoomType = roomTypeService.updateRoomType(id, roomTypeRequest);
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "basePrice", required = false) BigDecimal basePrice,
+            @RequestParam(value = "maxCapacity", required = false) Integer maxCapacity,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "photo", required = false) MultipartFile photo) {
+        RoomType updatedRoomType = roomTypeService.updateRoomType(id, name, basePrice, maxCapacity != null ? maxCapacity : 0, description, photo);
         return ResponseEntity.ok(mapToResponse(updatedRoomType));
     }
 
@@ -66,7 +76,8 @@ public class RoomTypeController {
                 roomType.getName(),
                 roomType.getBasePrice(),
                 roomType.getMaxCapacity(),
-                roomType.getDescription()
+                roomType.getDescription(),
+                roomType.getPhoto()
         );
     }
 }

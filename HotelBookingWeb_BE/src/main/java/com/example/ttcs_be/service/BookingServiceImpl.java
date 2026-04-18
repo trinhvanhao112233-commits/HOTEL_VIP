@@ -83,13 +83,13 @@ public class BookingServiceImpl implements IBookingService {
             int guestsInRoom = roomReq.getNumAdults() + roomReq.getNumChildren();
             totalGuests += guestsInRoom;
 
-            BigDecimal roomPriceForStay = room.getPrice().multiply(BigDecimal.valueOf(numberOfNights));
+            BigDecimal roomPriceForStay = room.getRoomType().getBasePrice().multiply(BigDecimal.valueOf(numberOfNights));
             totalAmount = totalAmount.add(roomPriceForStay);
 
             BookingRoom bookingRoom = new BookingRoom();
             bookingRoom.setRoom(room);
             bookingRoom.setBooking(booking);
-            bookingRoom.setPriceAtBooking(room.getPrice());
+            bookingRoom.setPriceAtBooking(room.getRoomType().getBasePrice());
             bookingRoom.setNumAdults(roomReq.getNumAdults());
             bookingRoom.setNumChildren(roomReq.getNumChildren());
 
@@ -136,5 +136,15 @@ public class BookingServiceImpl implements IBookingService {
     @Override
     public long getTotalBookings() {
         return bookingRepository.countTotalBookings();
+    }
+
+    @Override
+    public List<Object[]> getMonthlyStatistics() {
+        return bookingRepository.getMonthlyStatistics();
+    }
+
+    @Override
+    public List<Object[]> getRoomTypeStatistics() {
+        return bookingRepository.getRoomTypeStatistics();
     }
 }

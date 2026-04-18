@@ -31,7 +31,7 @@ const RoomCard = ({ room }) => {
 						<Link to={`/book-room/${room.id}`}>
 							<Card.Img
 								variant="top"
-								src={`data:image/png;base64, ${room.photo}`}
+								src={room.photo ? `data:image/png;base64,${room.photo}` : "https://via.placeholder.com/300x200?text=No+Photo"}
 								alt="Room Photo"
 								style={{ width: "300px", height: "200px", objectFit: "cover" }}
 							/>
@@ -41,7 +41,7 @@ const RoomCard = ({ room }) => {
 						<Card.Title className="hotel-color h4 mb-2">{room.roomType ? room.roomType.name : "N/A"}</Card.Title>
 						<Card.Text className="text-muted mb-3">Experience ultimate comfort and luxury in our most refined rooms.</Card.Text>
 						<div className="d-flex align-items-center gap-3">
-							<span className="room-price">${room.price}</span>
+							<span className="room-price">{room.price ? room.price.toLocaleString() : "0"} VNĐ</span>
 							<span className="text-muted small">/ night</span>
 						</div>
 					</div>

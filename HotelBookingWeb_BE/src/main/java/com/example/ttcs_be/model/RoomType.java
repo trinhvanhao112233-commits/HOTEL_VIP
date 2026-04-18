@@ -29,6 +29,10 @@ public class RoomType {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Lob
+    @Column(name = "photo", columnDefinition = "LONGTEXT")
+    private String photo;
+
     // 1 Loại phòng có nhiều Phòng vật lý
     @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL)
     private List<Room> rooms;

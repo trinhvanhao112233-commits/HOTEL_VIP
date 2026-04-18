@@ -71,7 +71,7 @@ const Checkout = () => {
 												</tr>
 												<tr>
 													<th>Price:</th>
-													<td>${room.roomType?.basePrice || 0} / night</td>
+													<td>{room.price ? room.price.toLocaleString() : "0"} VNĐ / night</td>
 												</tr>
 											</tbody>
 										</table>

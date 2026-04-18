@@ -25,31 +25,22 @@ public class RoomServiceImpl implements IRoomService {
     private final RoomTypeRepository roomTypeRepository;
 
     @Override
-    public Room addNewRoom(Long roomTypeId, String roomNumber, BigDecimal price, MultipartFile photo) {
+    public Room addNewRoom(Long roomTypeId, String roomNumber) {
+        String trimmedRoomNumber = roomNumber != null ? roomNumber.trim() : null;
+
         // 1. Kiểm tra xem số phòng (roomNumber) đã tồn tại chưa
-        if (roomRepository.findByRoomNumber(roomNumber).isPresent()) {
-            throw new ResourceAlreadyExistsException("Số phòng " + roomNumber + " đã tồn tại trong hệ thống!");
+        if (roomRepository.findByRoomNumber(trimmedRoomNumber).isPresent()) {
+            throw new ResourceAlreadyExistsException("Số phòng " + trimmedRoomNumber + " đã tồn tại trong hệ thống!");
         }
 
         // 2. Tìm loại phòng (RoomType) để ánh xạ
         RoomType roomType = roomTypeRepository.findById(roomTypeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy loại phòng với ID: " + roomTypeId)); // [1]
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy loại phòng với ID: " + roomTypeId));
 
         Room room = new Room();
         room.setRoomType(roomType);
-        room.setRoomNumber(roomNumber);
-        room.setPrice(price);
-
-        // 3. Xử lý chuyển đổi hình ảnh thành chuỗi Base64 để lưu vào LONGTEXT
-        if (photo != null && !photo.isEmpty()) { // [4]
-            try {
-                byte[] photoBytes = photo.getBytes();
-                String base64Photo = Base64.getEncoder().encodeToString(photoBytes);
-                room.setPhoto(base64Photo);
-            } catch (IOException e) {
-                throw new InternalServerException("Lỗi xử lý hình ảnh tải lên: " + e.getMessage()); // [2]
-            }
-        }
+        room.setRoomNumber(trimmedRoomNumber);
+        room.setRoomPrice(roomType.getBasePrice()); // Gán giá trị mặc định từ Loại phòng để khớp DB
 
         return roomRepository.save(room);
     }
@@ -62,17 +53,17 @@ public class RoomServiceImpl implements IRoomService {
     @Override
     public Room getRoomById(Long roomId) {
         return roomRepository.findById(roomId)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phòng với ID: " + roomId)); // [1]
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phòng với ID: " + roomId));
     }
 
     @Override
-    public Room updateRoom(Long roomId, Long roomTypeId, String roomNumber, BigDecimal price, MultipartFile photo) {
+    public Room updateRoom(Long roomId, Long roomTypeId, String roomNumber) {
         Room existingRoom = getRoomById(roomId);
 
         // Cập nhật Loại phòng nếu có thay đổi
         if (roomTypeId != null && !existingRoom.getRoomType().getId().equals(roomTypeId)) {
             RoomType roomType = roomTypeRepository.findById(roomTypeId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy loại phòng với ID: " + roomTypeId)); // [1]
+                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy loại phòng với ID: " + roomTypeId));
             existingRoom.setRoomType(roomType);
         }
 
@@ -82,22 +73,6 @@ public class RoomServiceImpl implements IRoomService {
                 throw new ResourceAlreadyExistsException("Số phòng " + roomNumber + " đã được sử dụng!");
             }
             existingRoom.setRoomNumber(roomNumber);
-        }
-
-        // Cập nhật giá nếu có
-        if (price != null) {
-            existingRoom.setPrice(price);
-        }
-
-        // Cập nhật ảnh mới nếu Admin có upload
-        if (photo != null && !photo.isEmpty()) { // [4]
-            try {
-                byte[] photoBytes = photo.getBytes();
-                String base64Photo = Base64.getEncoder().encodeToString(photoBytes);
-                existingRoom.setPhoto(base64Photo);
-            } catch (IOException e) {
-                throw new InternalServerException("Lỗi khi cập nhật hình ảnh: " + e.getMessage()); // [2]
-            }
         }
 
         return roomRepository.save(existingRoom);
@@ -113,5 +88,10 @@ public class RoomServiceImpl implements IRoomService {
     public List<Room> getAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, Long roomTypeId) {
         // Gọi thẳng xuống câu Query tối ưu mà chúng ta đã viết ở RoomRepository trước đó
         return roomRepository.findAvailableRoomsByDatesAndType(checkInDate, checkOutDate, roomTypeId);
+    }
+
+    @Override
+    public long countTotalRooms() {
+        return roomRepository.count();
     }
 }

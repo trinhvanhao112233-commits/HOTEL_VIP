@@ -45,7 +45,7 @@ const RoomCarousel = () => {
 											<Link to={`/book-room/${room.id}`}>
 												<Card.Img
 													variant="top"
-													src={`data:image/png;base64, ${room.photo}`}
+													src={room.photo ? `data:image/png;base64,${room.photo}` : "https://via.placeholder.com/300x200?text=No+Photo"}
 													alt="Room Photo"
 													className="w-100"
 													style={{ height: "200px", objectFit: "cover" }}
@@ -53,7 +53,9 @@ const RoomCarousel = () => {
 											</Link>
 											<Card.Body className="d-flex flex-column">
 												<Card.Title className="hotel-color h6">{room.roomType ? room.roomType.name : "N/A"}</Card.Title>
-												<Card.Title className="room-price small mb-3">${room.roomType ? room.roomType.basePrice : "N/A"} / night</Card.Title>
+												<Card.Title className="room-price small mb-3">
+													{room.roomType ? room.roomType.basePrice.toLocaleString() : "0"} VNĐ / night
+												</Card.Title>
 												<div className="mt-auto">
 													<Link to={`/book-room/${room.id}`} className="btn btn-hotel btn-sm w-100 rounded-pill">
 														View Details

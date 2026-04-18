@@ -64,7 +64,9 @@ const BookingsTable = ({ bookingInfo, handleBookingCancellation }) => {
 								<td>{booking.guestName}</td>
 								<td>{booking.totalGuests}</td>
 								<td><code className="bg-light p-1 rounded text-primary">{booking.confirmationCode}</code></td>
-								<td className="hotel-color fw-bold">${booking.totalAmount}</td>
+								<td className="hotel-color fw-bold">
+									{booking.totalAmount ? booking.totalAmount.toLocaleString() : "0"} VNĐ
+								</td>
 								<td>
 									<button
 										className="btn btn-outline-danger btn-sm rounded-pill px-3"

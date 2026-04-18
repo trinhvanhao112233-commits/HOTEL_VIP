@@ -90,13 +90,6 @@ const Profile = () => {
 							
 							<div className="text-start px-3">
 								<div className="d-flex align-items-center mb-3">
-									<div className="bg-light p-2 rounded-3 me-3"><FaIdCard className="hotel-color" /></div>
-									<div>
-										<small className="text-muted d-block uppercase small fw-bold">User ID</small>
-										<span className="fw-semibold">{user?.id}</span>
-									</div>
-								</div>
-								<div className="d-flex align-items-center mb-3">
 									<div className="bg-light p-2 rounded-3 me-3"><FaEnvelope className="hotel-color" /></div>
 									<div>
 										<small className="text-muted d-block uppercase small fw-bold">Email Address</small>
@@ -165,7 +158,9 @@ const Profile = () => {
 													<td>{moment(booking.checkIn).format("MMM Do, YYYY")}</td>
 													<td>{moment(booking.checkOut).format("MMM Do, YYYY")}</td>
 													<td><code className="text-primary bg-light p-1 rounded small">{booking.confirmationCode}</code></td>
-													<td className="hotel-color fw-bold">${booking.totalAmount}</td>
+													<td className="hotel-color fw-bold">
+														{booking.totalAmount ? booking.totalAmount.toLocaleString() : "0"} VNĐ
+													</td>
 												</tr>
 											))}
 										</tbody>

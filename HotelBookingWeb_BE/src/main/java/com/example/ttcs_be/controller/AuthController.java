@@ -45,12 +45,19 @@ public class AuthController {
     // API 2: Khách hàng nhập mã OTP để hoàn tất
     @PostMapping("/verify-otp")
     public ResponseEntity<?> verifyOtp(@RequestParam("email") String email, @RequestParam("otp") String otp) {
-        String result = userService.validateOtpAndSaveUser(email, otp);
+        try {
+            String result = userService.validateOtpAndSaveUser(email, otp);
 
-        if (result.equals("Xác thực thành công")) {
-            return ResponseEntity.ok(Collections.singletonMap("message", "Tài khoản của bạn đã được tạo thành công! Bây giờ bạn có thể đăng nhập."));
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            if (result.equals("Xác thực thành công")) {
+                return ResponseEntity.ok(Collections.singletonMap("message", "Tài khoản của bạn đã được tạo thành công! Bây giờ bạn có thể đăng nhập."));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            }
+        } catch (Exception e) {
+            System.err.println("OTP Verification Error for " + email + ": " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("message", "Lỗi máy chủ khi xác thực OTP: " + e.getMessage()));
         }
     }
 
@@ -76,6 +83,8 @@ public class AuthController {
         return ResponseEntity.ok(new JwtResponse(
                 userDetails.getId(),
                 userDetails.getEmail(),
+                userDetails.getFirstName(),
+                userDetails.getLastName(),
                 jwt,
                 roles));
     }
