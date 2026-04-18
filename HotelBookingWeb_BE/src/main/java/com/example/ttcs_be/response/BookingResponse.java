@@ -16,6 +16,7 @@ public class BookingResponse {
     private LocalDate checkIn;
     private LocalDate checkOut;
     private String guestName;
+    private String guestEmail;
     private String confirmationCode;
     private BigDecimal totalAmount;
     private int totalGuests;

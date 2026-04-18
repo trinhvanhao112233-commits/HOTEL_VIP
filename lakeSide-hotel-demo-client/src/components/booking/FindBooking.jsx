@@ -9,30 +9,24 @@ const FindBooking = () => {
 	const [isLoading, setIsLoading] = useState(false)
 	const [bookingInfo, setBookingInfo] = useState({
 		id: "",
-		bookingConfirmationCode: "",
-		room: { id: "", roomType: "" },
-		roomNumber: "",
-		checkInDate: "",
-		checkOutDate: "",
+		confirmationCode: "",
+		checkIn: "",
+		checkOut: "",
 		guestName: "",
 		guestEmail: "",
-		numOfAdults: "",
-		numOfChildren: "",
-		totalNumOfGuests: ""
+		totalNumOfGuests: "",
+		bookedRooms: []
 	})
 
 	const emptyBookingInfo = {
 		id: "",
-		bookingConfirmationCode: "",
-		room: { id: "", roomType: "" },
-		roomNumber: "",
-		checkInDate: "",
-		checkOutDate: "",
+		confirmationCode: "",
+		checkIn: "",
+		checkOut: "",
 		guestName: "",
 		guestEmail: "",
-		numOfAdults: "",
-		numOfChildren: "",
-		totalNumOfGuests: ""
+		totalNumOfGuests: "",
+		bookedRooms: []
 	}
 	const [isDeleted, setIsDeleted] = useState(false)
 
@@ -100,39 +94,60 @@ const FindBooking = () => {
 				</form>
 
 				{isLoading ? (
-					<div>Finding your booking...</div>
+					<div className="mt-4">
+						<div className="spinner-border hotel-color" role="status">
+							<span className="visually-hidden">Loading...</span>
+						</div>
+						<div className="mt-2">Finding your booking...</div>
+					</div>
 				) : error ? (
-					<div className="text-danger">Error: {error}</div>
-				) : bookingInfo.bookingConfirmationCode ? (
-					<div className="col-md-6 mt-4 mb-5">
-						<h3>Booking Information</h3>
-						<p className="text-success">Confirmation Code: {bookingInfo.bookingConfirmationCode}</p>
-						<p>Room Number: {bookingInfo.room.id}</p>
-						<p>Room Type: {bookingInfo.room.roomType}</p>
-						<p>
-							Check-in Date:{" "}
-							{moment(bookingInfo.checkInDate).subtract(1, "month").format("MMM Do, YYYY")}
-						</p>
-						<p>
-							Check-out Date:{" "}
-							{moment(bookingInfo.checkInDate).subtract(1, "month").format("MMM Do, YYYY")}
-						</p>
-						<p>Full Name: {bookingInfo.guestName}</p>
-						<p>Email Address: {bookingInfo.guestEmail}</p>
-						<p>Adults: {bookingInfo.numOfAdults}</p>
-						<p>Children: {bookingInfo.numOfChildren}</p>
-						<p>Total Guest: {bookingInfo.totalNumOfGuests}</p>
+					<div className="alert alert-danger mt-4 col-md-6">Error: {error}</div>
+				) : bookingInfo.confirmationCode ? (
+					<div className="col-md-7 mt-4 mb-5 shadow p-4 rounded bg-white">
+						<h3 className="hotel-color mb-4">Booking Information</h3>
+						<div className="row">
+							<div className="col-md-6">
+								<p><strong>Confirmation Code:</strong> <span className="text-success">{bookingInfo.confirmationCode}</span></p>
+								<p><strong>Full Name:</strong> {bookingInfo.guestName}</p>
+								<p><strong>Email:</strong> {bookingInfo.guestEmail}</p>
+								<p><strong>Total Guests:</strong> {bookingInfo.totalGuests}</p>
+							</div>
+							<div className="col-md-6">
+								<p><strong>Check-in:</strong> {moment(bookingInfo.checkIn).format("MMM Do, YYYY")}</p>
+								<p><strong>Check-out:</strong> {moment(bookingInfo.checkOut).format("MMM Do, YYYY")}</p>
+								<p><strong>Total Amount:</strong> {bookingInfo.totalAmount?.toLocaleString()} VNĐ</p>
+							</div>
+						</div>
+
+						<h5 className="mt-4 mb-3 border-bottom pb-2">Room Details</h5>
+						{bookingInfo.bookedRooms && bookingInfo.bookedRooms.map((room) => (
+							<div key={room.id} className="mb-3 p-3 border rounded bg-light">
+								<div className="row align-items-center">
+									<div className="col-md-8">
+										<p className="mb-0"><strong>Room {room.roomNumber}</strong> - {room.roomType}</p>
+										<p className="mb-0 text-muted small">
+											Price at booking: {room.priceAtBooking?.toLocaleString()} VNĐ / night
+										</p>
+									</div>
+									<div className="col-md-4 text-end">
+										<p className="mb-0 small">{room.numAdults} Adults, {room.numChildren} Children</p>
+									</div>
+								</div>
+							</div>
+						))}
 
 						{!isDeleted && (
-							<button
-								onClick={() => handleBookingCancellation(bookingInfo.id)}
-								className="btn btn-danger">
-								Cancel Booking
-							</button>
+							<div className="text-center mt-4">
+								<button
+									onClick={() => handleBookingCancellation(bookingInfo.id)}
+									className="btn btn-danger px-4">
+									Cancel Booking
+								</button>
+							</div>
 						)}
 					</div>
 				) : (
-					<div>find booking...</div>
+					<div className="mt-4 text-muted italic">No booking loaded yet...</div>
 				)}
 
 				{isDeleted && <div className="alert alert-success mt-3 fade show">{successMessage}</div>}

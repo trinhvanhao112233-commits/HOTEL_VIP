@@ -81,6 +81,7 @@ public class BookingController {
         response.setConfirmationCode(booking.getConfirmationCode());
 
         response.setGuestName(booking.getGuestName());
+        response.setGuestEmail(booking.getGuestEmail());
         response.setTotalGuests(booking.getTotalGuests());
         response.setTotalAmount(booking.getTotalAmount());
 
