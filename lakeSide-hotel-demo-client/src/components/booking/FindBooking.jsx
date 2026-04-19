@@ -3,6 +3,7 @@ import moment from "moment"
 import { cancelBooking, getBookingByConfirmationCode } from "../utils/ApiFunctions"
 
 const FindBooking = () => {
+	const userRole = localStorage.getItem("userRole")
 	const [confirmationCode, setConfirmationCode] = useState("")
 	const [error, setError] = useState(null)
 	const [successMessage, setSuccessMessage] = useState("")
@@ -136,7 +137,7 @@ const FindBooking = () => {
 							</div>
 						))}
 
-						{!isDeleted && (
+						{userRole === "ROLE_ADMIN" && !isDeleted && (
 							<div className="text-center mt-4">
 								<button
 									onClick={() => handleBookingCancellation(bookingInfo.id)}

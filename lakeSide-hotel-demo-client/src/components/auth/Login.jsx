@@ -45,6 +45,7 @@ const Login = () => {
 					</label>
 					<div>
 						<input
+							required
 							id="email"
 							name="email"
 							type="email"
@@ -61,6 +62,7 @@ const Login = () => {
 					</label>
 					<div>
 						<input
+							required
 							id="password"
 							name="password"
 							type="password"

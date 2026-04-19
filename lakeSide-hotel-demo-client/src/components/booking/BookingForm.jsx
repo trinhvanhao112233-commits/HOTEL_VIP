@@ -11,11 +11,11 @@ const BookingForm = ({ selectedRooms = [] }) => {
 	const [isSubmitted, setIsSubmitted] = useState(false)
 	const [errorMessage, setErrorMessage] = useState("")
 
-	const currentUser = localStorage.getItem("userId")
+	const currentUserEmail = localStorage.getItem("userEmail")
 
 	const [booking, setBooking] = useState({
 		guestFullName: "",
-		guestEmail: currentUser,
+		guestEmail: currentUserEmail,
 		checkInDate: "",
 		checkOutDate: "",
 		numOfAdults: "",
@@ -41,8 +41,26 @@ const BookingForm = ({ selectedRooms = [] }) => {
 	const isGuestCountValid = () => {
 		const adultCount = parseInt(booking.numOfAdults)
 		const childrenCount = parseInt(booking.numOfChildren)
-		const totalCount = adultCount + childrenCount
-		return totalCount >= 1 && adultCount >= 1
+		const totalCount = (isNaN(adultCount) ? 0 : adultCount) + (isNaN(childrenCount) ? 0 : childrenCount)
+		
+		if (isNaN(adultCount) || adultCount < 1) {
+			setErrorMessage("Phải có ít nhất 1 người lớn.")
+			return false
+		}
+		if (totalCount < 1) {
+			setErrorMessage("Số lượng khách ít nhất phải là 1.")
+			return false
+		}
+		return true
+	}
+
+	const isEmailValid = () => {
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+		if (!booking.guestEmail || !emailRegex.test(booking.guestEmail)) {
+			setErrorMessage("Email không hợp lệ. Vui lòng kiểm tra lại thông tin tài khoản.")
+			return false
+		}
+		return true
 	}
 
 	const isCheckOutDateValid = () => {
@@ -58,7 +76,9 @@ const BookingForm = ({ selectedRooms = [] }) => {
 	const handleSubmit = (e) => {
 		e.preventDefault()
 		const form = e.currentTarget
-		if (form.checkValidity() === false || !isGuestCountValid() || !isCheckOutDateValid()) {
+		setErrorMessage("") // Clear previous errors
+		
+		if (form.checkValidity() === false || !isEmailValid() || !isGuestCountValid() || !isCheckOutDateValid()) {
 			e.stopPropagation()
 		} else {
 			setIsSubmitted(true)

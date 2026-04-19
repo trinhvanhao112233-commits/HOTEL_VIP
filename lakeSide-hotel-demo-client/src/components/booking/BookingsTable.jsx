@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react"
 import DateSlider from "../common/DateSlider"
 
 const BookingsTable = ({ bookingInfo, handleBookingCancellation }) => {
+	const userRole = localStorage.getItem("userRole")
 	const [filteredBookings, setFilteredBookings] = useState(bookingInfo)
 
 	const filterBooknigs = (startDate, endDate) => {
@@ -68,12 +69,14 @@ const BookingsTable = ({ bookingInfo, handleBookingCancellation }) => {
 									{booking.totalAmount ? booking.totalAmount.toLocaleString() : "0"} VNĐ
 								</td>
 								<td>
-									<button
-										className="btn btn-outline-danger btn-sm rounded-pill px-3"
-										style={{ position: "relative", zIndex: 10 }}
-										onClick={() => handleBookingCancellation(booking.id)}>
-										Cancel
-									</button>
+									{userRole === "ROLE_ADMIN" && (
+										<button
+											className="btn btn-outline-danger btn-sm rounded-pill px-3"
+											style={{ position: "relative", zIndex: 10 }}
+											onClick={() => handleBookingCancellation(booking.id)}>
+											Cancel
+										</button>
+									)}
 								</td>
 							</tr>
 						))}
